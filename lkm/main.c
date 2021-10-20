@@ -1,6 +1,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/sched.h>
+#include <linux/kernel.h>
 
 #include "khook/engine.c"
 
@@ -88,3 +89,5 @@ origin:
 
 module_init(on_module_init);
 module_exit(on_module_exit);
+
+MODULE_LICENSE("GPL");
