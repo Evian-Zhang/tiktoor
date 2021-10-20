@@ -1,5 +1,5 @@
 #include "../khook/engine.h"
-#include "../../protocol.h"
+#include "../protocol.h"
 #include "process_hiding.h"
 
 #include <linux/uaccess.h> // copy_from_user

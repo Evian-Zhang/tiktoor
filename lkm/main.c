@@ -4,7 +4,7 @@
 
 #include "khook/engine.c"
 
-#include "../protocol.h"
+#include "protocol.h"
 
 #include "driver_hiding/driver_hiding.h"
 #include "file_hiding/file_hiding.h"
