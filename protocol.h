@@ -4,3 +4,7 @@ struct TiktoorCmdArg {
     unsigned char action;
     void *subargs;
 };
+
+struct ProcessHidingSubargs {
+    unsigned int pid;
+};
