@@ -87,3 +87,95 @@ struct ProcessHidingSubargs {
 ### 模块隐藏
 
 参考<https://xcellerator.github.io/posts/linux_rootkits_05/>，只需要将当前的模块在模块列表中删除即可（由于没有被释放，所以当前模块仍然在内核内存中工作）
+
+## 客户端
+
+用户态的客户端程序根据设定的通信协议与Rootkit进行通信。
+
+### 构建
+
+进入`client`目录，使用
+
+```sh
+cargo build --workspace --release
+```
+
+编译客户端程序（需要[安装Rust](https://www.rust-lang.org/zh-CN/tools/install)）。
+
+构建完成后，所有程序位于`client/target/release`目录中。
+
+### 使用
+
+目前有两个客户端程序`tiktoor-cli`和`tiktoor-daemon`。前者是简单的命令行工具，后者是守护进程。一般使用前者作简单的测试使用，使用后者作为真实的客户端。
+
+#### `tiktoor-cli`
+
+使用
+
+```sh
+./tiktoor-cli --help
+```
+
+可以查看其使用方法。
+
+##### 驱动隐藏
+
+##### 文件隐藏
+
+##### 端口隐藏
+
+##### 进程隐藏
+
+```sh
+./tiktoor-cli process-hiding --pid 123456
+```
+
+可隐藏进程号为123456的进程。
+
+##### 进程保护
+
+##### 内核模块隐藏
+
+```sh
+./tiktoor-cli module-hiding
+```
+
+##### 内核模块恢复
+
+```sh
+./tiktoor-cli module-unhiding
+```
+
+#### `tiktoor-daemon`
+
+该程序为常驻后台的守护进程，可通过
+
+```sh
+./tiktoor-daemon --host localhost --port 2333
+```
+
+启动，监听`localhost:2333`。
+
+##### 驱动隐藏
+
+##### 文件隐藏
+
+##### 端口隐藏
+
+##### 进程隐藏
+
+监听接口为`/hide-process`，方法为POST。内容需要满足格式
+
+```json
+{ "pid": 123456 }
+```
+
+##### 进程保护
+
+##### 内核模块隐藏
+
+监听接口为`/hide-module`，方法为POST。
+
+##### 内核模块恢复
+
+监听接口为`/unhide-module`，方法为POST。
