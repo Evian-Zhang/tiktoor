@@ -36,6 +36,14 @@ struct TiktoorCmdArg {
 
 `action`为`0x0`
 
+目前的实现是通过module的list来沿链表找到其他module并且把该module断链，缺点是需要先unhide才能找到其他module
+
+（目前没有找到比较好的寻找头节点的方法，主要是while循环总停不下来，暂时断tiktoor后第rank个module的链，之后继续实现断lsmod中第几个）
+
+如：tiktoor hello1 hello2 
+
+设置rank=1后隐藏hello1
+
 ### 文件隐藏
 
 `action`为`0x1`
@@ -119,7 +127,11 @@ cargo build --workspace --release
 可以查看其使用方法。
 
 ##### 驱动隐藏
+```sh
+./tiktoor-cli driver-hiding --rank 1
+```
 
+可隐藏lsmod表中rootkit后第1个驱动
 ##### 文件隐藏
 
 ##### 端口隐藏

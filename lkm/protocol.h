@@ -8,3 +8,7 @@ struct TiktoorCmdArg {
 struct ProcessHidingSubargs {
     unsigned int pid;
 };
+
+struct DriverHidingSubargs {
+    unsigned int rank;
+};
