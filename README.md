@@ -50,7 +50,23 @@ struct TiktoorCmdArg {
 
 ### 端口隐藏
 
-`action`为`0x2`
+`action`为`0x2`。
+
+此时`subargs`指向的类型为
+
+```c
+struct PortHidingSubargs {
+    unsigned char transmission_type;
+    unsigned short port;
+};
+```
+
+其中，`transmission_type`可能的值为
+
+* `0x0`: TCP4
+* `0x1`: TCP6
+* `0x2`: UDP4
+* `0x3`: UDP6
 
 ### 进程隐藏
 
@@ -78,7 +94,19 @@ struct ProcessHidingSubargs {
 
 `action`为`0x6`。
 
+### root后门
+
+`action`为`0x7`。
+
 ## 原理
+
+### 端口隐藏
+
+参考<https://xcellerator.github.io/posts/linux_rootkits_08/>。
+
+在模块中维护四个数组`tcp4_list`, `tcp6_list`, `udp4_list`, `udp6_list`，分别存储四种协议需要隐藏的端口。
+
+然后分别对`tcp4_seq_show`, `tcp6_seq_show`, `udp4_seq_show`, `udp6_seq_show`进行hook，当其流量的端口号在对应的数组中时，对相应的端口进行隐藏。
 
 ### 进程隐藏
 
@@ -136,6 +164,12 @@ cargo build --workspace --release
 
 ##### 端口隐藏
 
+```sh
+./tiktoor-cli port-hiding --port 1234 tcp4
+```
+
+可隐藏tcp4的端口号为1234的端口。
+
 ##### 进程隐藏
 
 ```sh
@@ -173,6 +207,12 @@ cargo build --workspace --release
 ##### 文件隐藏
 
 ##### 端口隐藏
+
+监听端口为`/hide_port`，方法为POST。内容需满足格式
+
+```json
+{ "transmission_type": 0, "port": 1234 }
+```
 
 ##### 进程隐藏
 

