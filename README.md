@@ -82,7 +82,15 @@ struct ProcessHidingSubargs {
 
 ### 进程保护
 
-`action`为`0x4`
+`action`为`0x4`。
+
+此时`subargs`指向的类型为
+
+```c
+struct ProcessProtectingSubargs {
+    unsigned int pid;
+};
+```
 
 ### 内核模块隐藏
 
@@ -179,6 +187,10 @@ cargo build --workspace --release
 可隐藏进程号为123456的进程。
 
 ##### 进程保护
+```sh
+./tiktoor-cli process-protection --pid 123456
+```
+可以保护进程号为123456的进程，使其接收不到kill发送的信号。
 
 ##### 内核模块隐藏
 
@@ -223,6 +235,12 @@ cargo build --workspace --release
 ```
 
 ##### 进程保护
+
+监听接口为`/protect_process`，方法为POST。内容需要满足格式
+
+```json
+{ "pid": 123456 }
+```
 
 ##### 内核模块隐藏
 
