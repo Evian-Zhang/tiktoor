@@ -10,7 +10,7 @@ struct ProcessHidingSubargs {
 };
 
 struct DriverHidingSubargs {
-    unsigned int rank;
+    const char* name;
 };
 
 struct PortHidingSubargs {
