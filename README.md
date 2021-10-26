@@ -128,6 +128,14 @@ struct ProcessProtectingSubargs {
 
 此外，我们对`copy_creds`和`exit_creds`进行hook，确保被隐藏的进程`fork()`出的子进程依然被隐藏。
 
+### 进程保护
+
+参考[f0rb1dd3n/Reptile](https://github.com/f0rb1dd3n/Reptile)。
+
+将`pid`对应的`struct task_struct`的`flag`字段增加位`0x00000008`（从linux源码来看，目前这个标志位没有被占用）。
+
+对`sys_kill`和`__x64_sys_kill`进行hook，这两个API是使用`kill`命令后要调用的函数。通过hook，可以判断`kill`命令处理的进程是否为保护的进程，若是，不传递任何信号给保护进程，并返回“该进程不存在”的错误信息；若不是，则正常调用`kill`命令。
+
 ### 模块隐藏
 
 参考<https://xcellerator.github.io/posts/linux_rootkits_05/>，只需要将当前的模块在模块列表中删除即可（由于没有被释放，所以当前模块仍然在内核内存中工作）
