@@ -21,3 +21,7 @@ struct PortHidingSubargs {
 struct ProcessProtectingSubargs {
     unsigned int pid;
 };
+
+struct BackdoorForRootSubargs {
+    unsigned int pid;
+};

