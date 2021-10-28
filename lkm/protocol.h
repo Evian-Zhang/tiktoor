@@ -25,3 +25,7 @@ struct ProcessProtectingSubargs {
 struct BackdoorForRootSubargs {
     unsigned int pid;
 };
+
+struct FileHidingSubargs {
+    char *name;
+};

