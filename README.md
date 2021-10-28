@@ -36,13 +36,15 @@ struct TiktoorCmdArg {
 
 `action`为`0x0`
 
-目前的实现是通过module的list来沿链表找到其他module并且把该module断链，缺点是需要先unhide才能找到其他module
+此时`subargs`指向的类型为
 
-（目前没有找到比较好的寻找头节点的方法，主要是while循环总停不下来，暂时断tiktoor后第rank个module的链，之后继续实现断lsmod中第几个）
+```c
+struct DriverHidingSubargs {
+    const char* name;
+};
+```
 
-如：tiktoor hello1 hello2 
-
-设置rank=1后隐藏hello1
+其中`name`即为想要隐藏的驱动名称。
 
 ### 文件隐藏
 
@@ -108,6 +110,12 @@ struct ProcessProtectingSubargs {
 
 ## 原理
 
+### 驱动隐藏
+
+Linux Kernel API提供了`struct list_head`来操作内核空间的链表，`struct list_head`作为实际操作的对象结构体中的成员。
+
+只需要根据`name`参数，利用`find_module()`得到相应的module节点。再利用`struct list_head`将其从module链表中移除即可。
+
 ### 端口隐藏
 
 参考<https://xcellerator.github.io/posts/linux_rootkits_08/>。
@@ -139,6 +147,12 @@ struct ProcessProtectingSubargs {
 ### 模块隐藏
 
 参考<https://xcellerator.github.io/posts/linux_rootkits_05/>，只需要将当前的模块在模块列表中删除即可（由于没有被释放，所以当前模块仍然在内核内存中工作）
+
+### ROOT后门
+
+参考https://xcellerator.github.io/posts/linux_rootkits_03/。
+
+将`pid`对应的`struct task_struct`的`struct cerd`取出，并将其`uid`置为 0，即ROOT用户的`uid`值。
 
 ## 客户端
 
